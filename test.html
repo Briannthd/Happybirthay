@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Happy Birthday Thành Nam 🎂</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0b0f1f;
+      color: #fff;
+      font-family: Segoe UI, sans-serif;
+      overflow: hidden;
+    }
+    canvas#fireworks {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+    }
+    .card {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+    h1 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+    .cake {
+      position: relative;
+      margin: 60px auto 0;
+      width: 200px;
+      height: 160px;
+    }
+    .tier {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      border-radius: 10px;
+    }
+    .tier.bottom { width: 200px; height: 60px; bottom: 0; background: #ffe0c0; }
+    .tier.mid { width: 150px; height: 50px; bottom: 60px; background: #ffcc99; }
+    .tier.top { width: 100px; height: 40px; bottom: 110px; background: #fff0e0; }
+    .candles {
+      position: absolute;
+      bottom: 150px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: 20px;
+    }
+    .candle {
+      width: 12px; height: 30px;
+      background: #ffe066;
+      position: relative;
+      border-radius: 3px;
+    }
+    .wick {
+      width: 2px; height: 6px;
+      background: #333;
+      position: absolute;
+      top: -6px; left: 50%;
+      transform: translateX(-50%);
+    }
+    .flame {
+      position: absolute;
+      top: -26px; left: 50%;
+      transform: translateX(-50%);
+      width: 16px; height: 26px;
+      border-radius: 50% 50% 40% 40%;
+      background: radial-gradient(circle at 30% 30%, #fff, #ff8, #f80);
+      animation: flicker .2s infinite alternate;
+      transition: opacity .8s;
+    }
+    .flame.out {
+      opacity: 0;
+    }
+    .smoke {
+      position: absolute;
+      top: -10px; left: 50%;
+      width: 6px; height: 6px;
+      background: #bbb;
+      border-radius: 50%;
+      opacity: 0;
+      transform: translateX(-50%);
+      filter: blur(4px);
+    }
+    .smoke.rise {
+      animation: rise 2s forwards;
+    }
+    @keyframes flicker {
+      from { transform: translateX(-50%) scale(1) rotate(-2deg); }
+      to   { transform: translateX(-50%) scale(0.95) rotate(2deg); }
+    }
+    @keyframes rise {
+      0% { opacity: .6; transform: translate(-50%,0) scale(.6); }
+      100% { opacity: 0; transform: translate(-30%,-80px) scale(1.6); }
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 16px;
+      font-size: 16px;
+      font-weight: bold;
+      background: linear-gradient(90deg,#8a7dff,#ff72b6);
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      color: #0b0f1f;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="fireworks"></canvas>
+  <div class="card">
+    <h1>🎉 Happy Birthday <span style="color:#ffd166">Thành Nam</span> 🎂</h1>
+    <div class="cake">
+      <div class="tier bottom"></div>
+      <div class="tier mid"></div>
+      <div class="tier top"></div>
+      <div class="candles">
+        <div class="candle"><div class="wick"></div><div class="flame"></div><div class="smoke"></div></div>
+        <div class="candle"><div class="wick"></div><div class="flame"></div><div class="smoke"></div></div>
+        <div class="candle"><div class="wick"></div><div class="flame"></div><div class="smoke"></div></div>
+      </div>
+    </div>
+    <button id="btn">Thổi nến thoaiiii</button>
+  </div>
+
+  <script>
+    // Fireworks background
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
+    resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
+
+    let fireworks = [];
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+
+    class Particle {
+      constructor(x,y,color){
+        this.x=x; this.y=y;
+        this.color=color;
+        this.radius=2+Math.random()*2;
+        const angle=Math.random()*2*Math.PI;
+        const speed=Math.random()*6+2;
+        this.vx=Math.cos(angle)*speed;
+        this.vy=Math.sin(angle)*speed;
+        this.alpha=1;
+      }
+      update(){
+        this.x+=this.vx;
+        this.y+=this.vy;
+        this.vy+=0.05;
+        this.alpha-=0.015;
+      }
+      draw(){
+        ctx.globalAlpha=this.alpha;
+        ctx.fillStyle=this.color;
+        ctx.beginPath();
+        ctx.arc(this.x,this.y,this.radius,0,2*Math.PI);
+        ctx.fill();
+        ctx.globalAlpha=1;
+      }
+    }
+
+    function createFirework(){
+      const x=Math.random()*canvas.width;
+      const y=Math.random()*canvas.height*0.5;
+      const colors=["#ff4d4d","#ffcc00","#66ff66","#66ccff","#ff66cc","#ffffff"];
+      const color=colors[Math.floor(Math.random()*colors.length)];
+      for(let i=0;i<50;i++){
+        fireworks.push(new Particle(x,y,color));
+      }
+    }
+
+    function animate(){
+      ctx.fillStyle="rgba(11,15,31,0.2)";
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      fireworks.forEach((p,i)=>{
+        p.update(); p.draw();
+        if(p.alpha<=0) fireworks.splice(i,1);
+      });
+      if(Math.random()<0.05){
+        createFirework();
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+
+    // 🎂 Tắt nến khi nhấn nút
+    document.getElementById("btn").addEventListener("click",()=>{
+      document.querySelectorAll(".flame").forEach(f=>{
+        f.classList.add("out");
+        const smoke=f.nextElementSibling;
+        setTimeout(()=>smoke.classList.add("rise"),200+Math.random()*400);
+      });
+    });
+  </script>
+</body>
+</html>
